@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives import hashes
 
 DATA_FILE = Path(__file__).with_name("passwords.json")
 SALT_FILE = Path(__file__).with_name("salt.bin")
-
+HASH_FILE = Path(__file__).with_name("hash.bin")
 
 password_manager = {}
 cipher = None
@@ -46,6 +46,8 @@ def load_passwords():
     if DATA_FILE.exists():
         with DATA_FILE.open("r", encoding="utf-8") as file:
             password_manager = json.load(file)
+
+    
 
 
 def save_passwords():
