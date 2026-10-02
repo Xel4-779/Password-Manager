@@ -12,10 +12,9 @@ from cryptography.hazmat.primitives import hashes
 
 DATA_FILE = Path(__file__).with_name("passwords.json")
 SALT_FILE = Path(__file__).with_name("salt.bin")
-HASH_FILE = Path(__file__).with_name("hash.bin")
+
 
 password_manager = {}
-hashed_passwords = {}
 
 cipher = None
 
