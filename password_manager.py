@@ -1,4 +1,5 @@
 import getpass
+import hashlib
 import json
 import os
 import base64
@@ -14,6 +15,8 @@ SALT_FILE = Path(__file__).with_name("salt.bin")
 HASH_FILE = Path(__file__).with_name("hash.bin")
 
 password_manager = {}
+hashed_passwords = {}
+
 cipher = None
 
 
@@ -111,6 +114,10 @@ def decode_password_from( current_account ):
 
 #Function 4 decode a password from a given account - tested
 def change_password():
+
+    
+
+
     username = input("Enter your username: ")
     
 
@@ -152,26 +159,83 @@ def retrieve_all_passwords():
 
 
 
+
+def logger_logic():
+
+    #You need to add the LOAD HASH function and also SAVE HASH 
+
+
+    while True:
+        print("----------------------------------------------")
+
+        print("\nPassword Loger")
+        print("1. Create Account")
+        print("2. Login")
+
+        print("Any other key to exit")
+        print("----------------------------------------------")
+        choice = input("Enter your choice: ")
+
+        match choice:
+            case "1":
+                create_account()
+            case "2":
+                login()
+            case _:
+                return
+
+
+
+
+
+
+
+
 def main():
     global cipher 
 
+    print("Start---------------------")
+    print("What do you need?")
+    print("1. Login/Create new account")
+    print("2. Retrieve passwords")
+    
+    print("Any other key to exit")
+    print("---------------------------")
+    
+    action =input("Insert the number of the process")
+
+    acces_logger = None
+
+    match action:
+        case "1":
+            acces_logger = True
+        case "2":
+            acces_logger = False
+        case _:
+            return
+        
+    
     load_passwords()
 
     master_password = getpass.getpass("Enter the master Password:   ")
     
-    
     cipher = Fernet(derive_key(master_password))
+
+    logger_logic()
+
+    if acces_logger == True:
+        return
 
     while True:
         
+
+
         print("----------------------------------------------")
 
         print("\nPassword Manager")
-        print("1. Create Account")
-        print("2. Login")
-        print("3. Retrieve Password")
-        print("4. Change Password")
-        print("5. Retrieve All Passwords")
+        print("1. Retrieve Password")
+        print("2. Change Password")
+        print("3. Retrieve All Passwords")
 
         print("Any other key to exit")
         print("----------------------------------------------")
@@ -181,17 +245,15 @@ def main():
 
         match choice:
             case '1':
-                create_account()
-            case '2':
-                login()
-            case '3':
                 decode_password_from(input("Enter the username to retrieve the password: "))
-            case '4':
+            case '2':
                 change_password()
-            case '5':
+            case '3':
                 retrieve_all_passwords()
             case _:
-                break
+                return
+
+
 
 
 
