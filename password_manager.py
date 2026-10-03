@@ -113,11 +113,12 @@ def decode_password_from( current_account ):
 
 #Function 4 decode a password from a given account - tested
 def change_password():
-
+    load_passwords()
     
 
 
     username = input("Enter your username: ")
+    username = username[0].lower() + username[1:]
     
 
     if username not in password_manager:
@@ -185,53 +186,12 @@ def logger_logic():
 
 
 
-
-
-
-
-
-def main():
-    global cipher 
-
-    print("Start---------------------")
-    print("What do you need?")
-    print("1. Login/Create new account")
-    print("2. Retrieve passwords")
+def retriever_logic():
     
-    print("Any other key to exit")
-    print("---------------------------")
-    
-    action =input("Insert the number of the process")
-
-    acces_logger = None
-
-    match action:
-        case "1":
-            acces_logger = True
-        case "2":
-            acces_logger = False
-        case _:
-            return
-        
-    
-    load_passwords()
-
-    master_password = getpass.getpass("Enter the master Password:   ")
-    
-    cipher = Fernet(derive_key(master_password))
-
-    logger_logic()
-
-    if acces_logger == True:
-        return
-
     while True:
-        
-
-
         print("----------------------------------------------")
 
-        print("\nPassword Manager")
+        print("\nPassword Retriever")
         print("1. Retrieve Password")
         print("2. Change Password")
         print("3. Retrieve All Passwords")
@@ -251,6 +211,47 @@ def main():
                 retrieve_all_passwords()
             case _:
                 return
+
+
+
+
+def main():
+    global cipher 
+
+    print("Start---------------------")
+    print("What do you need?")
+    print("1. Login/Create new account")
+    print("2. Retrieve passwords")
+    
+    print("Any other key to exit")
+    print("---------------------------")
+    
+    action =input("Insert the number of the process: ")
+
+    acces_logger = None
+
+    match action:
+        case "1":
+            acces_logger = True
+        case "2":
+            acces_logger = False
+        case _:
+            return
+        
+    
+    load_passwords()
+
+    master_password = getpass.getpass("Enter the master Password:   ")
+    
+    cipher = Fernet(derive_key(master_password))
+
+    
+
+    if acces_logger == True:
+        logger_logic()
+        return
+
+    retriever_logic()
 
 
 
