@@ -113,10 +113,12 @@ def decode_password_from( current_account ):
 
 #Function 4 decode a password from a given account - tested
 def change_password():
+    load_passwords()
+    
 
 
     username = input("Enter your username: ")
-    username = username.lower()
+    username = username[0].lower() + username[1:]
     
 
     if username not in password_manager:
