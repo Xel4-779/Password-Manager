@@ -69,10 +69,8 @@ def save_hashes():
         json.dump(  hash_manager , file , indent = 4  )
 
 
-# Function 1 create account - tested
+# Function 1 create account 
 def create_account():
-    load_passwords()
-    load_hashes()
 
     username = input("Enter a username: ")
     password = getpass.getpass("Enter a password: ")
@@ -89,20 +87,19 @@ def create_account():
 def login():
     username = input("Enter your username: ")
 
-    true_password = password_manager.get(username)
+    
 
-    if true_password == None:
+
+    if hash_manager.get(username) is None:
         print("Nonexisting username!")
         print("-------------------------------")
         return
     
     password = getpass.getpass("Enter your password: ") 
 
-    decoded_password = cipher.decrypt(true_password.encode()).decode()
-    
-    
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
 
-    if password == decoded_password:
+    if password_hash == hash_manager.get(username):
 
         print("Login successful!")
         print("----------------------------------------------")
@@ -111,8 +108,37 @@ def login():
         print("----------------------------------------------")
 
 
+#Function 3 change a password from a given account 
+def change_password():
 
-#Function 3 change a password -tested
+    username = input("Enter your username: ")
+
+    if username not in password_manager:
+        print("Username does not exist.")
+        print("----------------------------------------------")
+        return
+    else:
+        password = getpass.getpass("Enter your current password: ")
+
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    if hashed_password == hash_manager.get(username):
+        new_password = getpass.getpass("Enter your new password: ")
+        password_manager[username] = cipher.encrypt(new_password.encode()).decode()
+        hash_manager[username] = hashlib.sha256(new_password.encode()).hexdigest()
+
+        save_passwords()
+        save_hashes()
+
+        print("Password changed successfully.")
+        print("----------------------------------------------")
+    else:
+        print("Username or password is incorrect.")
+        print("----------------------------------------------")
+
+
+
+#Function 4 decode a password 
 def decode_password_from( current_account ):
     if password_manager.get(current_account) != None:
 
@@ -125,37 +151,6 @@ def decode_password_from( current_account ):
         return
 
 
-#Function 4 decode a password from a given account - tested
-def change_password():
-    load_passwords()
-    
-
-
-    username = input("Enter your username: ")
-    username = username[0].lower() + username[1:]
-    
-
-    if username not in password_manager:
-        print("Username does not exist.")
-        print("----------------------------------------------")
-        return
-    else:
-        password = getpass.getpass("Enter your current password: ")
-        decrypted_password = cipher.decrypt(password_manager[username].encode()).decode()
-
-    if decrypted_password == password:
-        new_password = getpass.getpass("Enter your new password: ")
-        password_manager[username] = cipher.encrypt(new_password.encode()).decode()
-
-
-        save_passwords()
-
-
-        print("Password changed successfully.")
-        print("----------------------------------------------")
-    else:
-        print("Username or password is incorrect.")
-        print("----------------------------------------------")
 
 
 
@@ -176,7 +171,6 @@ def retrieve_all_passwords():
 
 def logger_logic():
 
-    #You need to add the LOAD HASH function and also SAVE HASH 
 
 
     while True:
@@ -185,6 +179,7 @@ def logger_logic():
         print("\nPassword Loger")
         print("1. Create Account")
         print("2. Login")
+        print("3. Change Password")
 
         print("Any other key to exit")
         print("----------------------------------------------")
@@ -209,8 +204,7 @@ def retriever_logic():
 
         print("\nPassword Retriever")
         print("1. Retrieve Password")
-        print("2. Change Password")
-        print("3. Retrieve All Passwords")
+        print("2. Retrieve All Passwords")
 
         print("Any other key to exit")
         print("----------------------------------------------")
@@ -232,9 +226,17 @@ def retriever_logic():
 def main():
     global cipher 
 
+    load_passwords()
+    load_hashes()
+
+    master_password = getpass.getpass("Enter the master Password:   ")
+    
+    cipher = Fernet(derive_key(master_password))
+
+
     print("Start---------------------")
     print("What do you need?")
-    print("1. Login/Create new account")
+    print("1. Log/Change/Create new account")
     print("2. Retrieve passwords")
     
     print("Any other key to exit")
@@ -253,11 +255,6 @@ def main():
             return
         
     
-    load_passwords()
-
-    master_password = getpass.getpass("Enter the master Password:   ")
-    
-    cipher = Fernet(derive_key(master_password))
 
     
 
