@@ -12,9 +12,11 @@ from cryptography.hazmat.primitives import hashes
 
 DATA_FILE = Path(__file__).with_name("passwords.json")
 SALT_FILE = Path(__file__).with_name("salt.bin")
-
+HASH_FILE = Path(__file__).with_name("hash.bin")
 
 password_manager = {}
+hash_manager = {}
+
 
 cipher = None
 
@@ -50,25 +52,37 @@ def load_passwords():
             password_manager = json.load(file)
 
     
+def load_hashes():
+    global hash_manager
+    
+    if HASH_FILE.exists():
+        with HASH_FILE.open("r", encoding="utf-8") as file:
+            hash_manager = json.load(file)
 
 
 def save_passwords():
     with DATA_FILE.open("w", encoding="utf-8") as file:
         json.dump(  password_manager , file , indent = 4  )
 
+def save_hashes():
+    with HASH_FILE.open("w", encoding="utf-8") as file:
+        json.dump(  hash_manager , file , indent = 4  )
 
 
 # Function 1 create account - tested
 def create_account():
-      
+    load_passwords()
+    load_hashes()
 
     username = input("Enter a username: ")
     password = getpass.getpass("Enter a password: ")
 
     password_manager[username] = cipher.encrypt(password.encode()).decode()
+    hash_manager[username] = hashlib.sha256(password.encode()).hexdigest()
     print("----------------------------------------------")
 
     save_passwords()
+    save_hashes()
 
 
 #Function 2 login - tested
@@ -181,6 +195,8 @@ def logger_logic():
                 create_account()
             case "2":
                 login()
+            case"3":
+                change_password()
             case _:
                 return
 
@@ -206,8 +222,6 @@ def retriever_logic():
             case '1':
                 decode_password_from(input("Enter the username to retrieve the password: "))
             case '2':
-                change_password()
-            case '3':
                 retrieve_all_passwords()
             case _:
                 return
